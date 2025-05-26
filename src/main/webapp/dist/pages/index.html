@@ -720,21 +720,18 @@
                             <h5>Lista de códigos</h5>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table id="tablaUsuarios" class="table table-bordered">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>CODIGO</th>
-                                        <th>NOMBRE</th>
+                                        <th>ID</th>
+                                        <th>DNI</th>
+                                        <th>Login</th>
+                                        <th>Contraseña</th>
+                                        <th>Nivel</th>
+                                        <th>Activo</th>
                                     </tr>
                                 </thead>
-                                
-                            
-                                
-                                <tbody>
-                                    <tr>
-                                        <td>001</td>
-                                        <td>Ejemplo</td>
-                                    </tr>
+                                <tbody>         
                                 </tbody>
                             </table>
                         </div>
@@ -1009,6 +1006,37 @@
             sparkline3.render();
         </script>
         <!--end::Script-->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                fetch("http://localhost:8080/CriptoExamenMod2Miguel/Listar")
+                        .then(response => {
+                            if (!response.ok)
+                                throw new Error("Error al obtener usuarios.");
+                            return response.json();
+                        })
+                        .then(data => {
+                            const tbody = document.querySelector("#tablaUsuarios tbody");
+                            tbody.innerHTML = "";
+
+                            data.forEach(usuario => {
+                                const fila = document.createElement("tr");
+                                fila.innerHTML = `
+                    <td>${usuario.codiUsua}</td>
+                    <td>${usuario.ndniUsua}</td>
+                    <td>${usuario.logiUsua}</td>
+                    <td>${usuario.passUsua}</td>
+                    <td>${usuario.niveUsua}</td>
+                    <td>${usuario.actiUsua}</td>
+                `;
+                                tbody.appendChild(fila);
+                            });
+                        })
+                        .catch(error => console.error("Error:", error));
+            });
+
+        </script>
+
+
     </body>
     <!--end::Body-->
 </html>

@@ -25,6 +25,8 @@
         <!--end::Required Plugin(AdminLTE)-->
         <!-- SDK de Google Identity Services -->
         <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script src="../../../CryptoJS v3.1.2/rollups/sha256.js" type="text/javascript"></script>
+
     </head>
 
     <!--end::Head-->
@@ -110,17 +112,18 @@
                 let user = document.querySelector("input[name='logiUsua']").value;
                 let pass = document.querySelector("input[name='passUsua']").value;
 
-                // URL corregida con parámetros
-                let url = `http://localhost:8080/CriptoExamenMod2Miguel/logueousuario?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
+                // Cifrar la contraseña con SHA256 (CryptoJS v3.1.2)
+                let passHash = CryptoJS.SHA256(pass).toString(CryptoJS.enc.Hex);
 
-                // Versión alternativa con parámetros en el cuerpo (POST recomendado)
-                // let url = `http://localhost:8080/CriptoExamenMod2Miguel/logueousuario`;
-                // let formData = new FormData();
-                // formData.append('user', user);
-                // formData.append('pass', pass);
+                // Aquí imprimes el resultado para verificarlo
+                console.log("Contraseña original:", pass);
+                console.log("Contraseña cifrada (SHA256):", passHash);
+
+                // URL con parámetros, pass ahora es el hash
+                let url = `http://localhost:8080/CriptoExamenMod2Miguel/logueousuario?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(passHash)}`;
 
                 fetch(url, {
-                    method: 'GET', // O 'POST' si cambias a la versión alternativa
+                    method: 'GET', // Mantengo GET según tu código, pero POST sería mejor
                     credentials: 'include' // Para manejar cookies/sesión
                 })
                         .then(response => {

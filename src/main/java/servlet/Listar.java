@@ -5,23 +5,22 @@
 package servlet;
 
 import dao.UsuarioJpaController;
+import dto.Usuario;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  *
- * @author SASHA
+ * @author Lenovo
  */
-@WebServlet(name = "LogueoUsuario", urlPatterns = {"/logueousuario"})
-public class LogueoUsuario extends HttpServlet {
+@WebServlet(name = "Listar", urlPatterns = {"/Listar"})
+public class Listar extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,28 +33,18 @@ public class LogueoUsuario extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        response.setContentType("application/json;charset=UTF-8");
-        
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-
-            String user = request.getParameter("user");
-            String pass = request.getParameter("pass"); // ESTA VIENE CIFRADA EN SHA-256 DESDE EL CLIENTE
-
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoExamenMod2Miguel_war_1.0-SNAPSHOTPU");
-            UsuarioJpaController usuDAO = new UsuarioJpaController(emf);
-
-            boolean esValido = usuDAO.validar(user, pass); // Compara usuario y password SHA256
-            
-            if (esValido) {
-                HttpSession sesion = request.getSession();
-                sesion.setAttribute("usuario", user);
-                String token = utils.JwtUtil.generarToken(user);
-
-                out.println("{\"resultado\":\"ok\",\"token\":\"" + token + "\"}");
-            } else {
-                out.println("{\"resultado\":\"error\"}");
-            }
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet Listar</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet Listar at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
     }
 
@@ -71,7 +60,21 @@ public class LogueoUsuario extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setContentType("application/json;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            UsuarioJpaController ujc = new UsuarioJpaController();
+            List<Usuario> listaUsuarios = ujc.findUsuarioEntities();
+
+            // Convertir lista a JSON
+            com.google.gson.Gson gson = new com.google.gson.Gson();
+            String json = gson.toJson(listaUsuarios);
+
+            out.print(json);
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener usuarios.");
+        }
     }
 
     /**
